@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بنك أسئلة الكيمياء: المخاليط والعناصر والمركبات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #e6f2ff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .screen {
+            display: none;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        h1, h2, h3 {
+            color: #0066cc;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .details {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .details p {
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #0066cc;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background-color: #0052a3;
+        }
+
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: #0066cc;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .options {
+            margin-bottom: 20px;
+        }
+
+        .option {
+            display: block;
+            margin-bottom: 10px;
+            padding: 12px;
+            background-color: #f0f8ff;
+            border: 1px solid #cce0ff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .option:hover {
+            background-color: #e0f0ff;
+        }
+
+        .option.selected {
+            background-color: #cce5ff;
+            border-color: #0066cc;
+        }
+
+        .option.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+        }
+
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background-color: #d4edda;
+            border: 1px solid #28a745;
+            color: #155724;
+        }
+
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            border: 1px solid #dc3545;
+            color: #721c24;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .progress {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #0066cc;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .results {
+            text-align: center;
+        }
+
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #0066cc;
+        }
+
+        .result-details {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f0f8ff;
+        }
+
+        .result-item.correct {
+            border-left: 5px solid #28a745;
+        }
+
+        .result-item.incorrect {
+            border-left: 5px solid #dc3545;
+        }
+
+        .question-number {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- شاشة البداية -->
+        <div id="start-screen" class="screen active">
+            <h1>بنك أسئلة الكيمياء</h1>
+            <h2>المخاليط والعناصر والمركبات</h2>
+            
+            <div class="intro">
+                <p>مرحبًا بك في اختبار الكيمياء التفاعلي</p>
+            </div>
+            
+            <div class="details">
+                <h3>تفاصيل الاختبار:</h3>
+                <p>• المدة: 30 دقيقة</p>
+                <p>• عدد الأسئلة: 50 سؤالاً</p>
+                <p>• تغطية الموضوعات: العناصر، المركبات، المخاليط، المحاليل، النسبة المئوية للكتلة</p>
+                <p>• لا يمكن تخطي السؤال دون إجابة</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="student-name">اسم الطالب:</label>
+                <input type="text" id="student-name" placeholder="أدخل اسمك هنا">
+            </div>
+            
+            <div class="form-group">
+                <label for="student-class">الشعبة:</label>
+                <input type="text" id="student-class" placeholder="أدخل شعبتك هنا">
+            </div>
+            
+            <button id="start-btn" class="btn">بدء الاختبار</button>
+        </div>
+
+        <!-- شاشة الاختبار -->
+        <div id="quiz-screen" class="screen">
+            <div class="timer" id="timer">30:00</div>
+            <div class="question-number" id="question-number">السؤال 1 من 50</div>
+            <div class="question" id="question"></div>
+            <div class="options" id="options"></div>
+            <div class="feedback" id="feedback"></div>
+            <div class="navigation">
+                <button id="prev-btn" class="btn" disabled>السابق</button>
+                <button id="next-btn" class="btn" disabled>التالي</button>
+            </div>
+            <div class="progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div id="progress-text">0% مكتمل</div>
+            </div>
+        </div>
+
+        <!-- شاشة النتائج -->
+        <div id="results-screen" class="screen">
+            <h2>نتيجة الاختبار</h2>
+            <div class="results">
+                <p id="student-info"></p>
+                <div class="score" id="score"></div>
+                <p id="time-taken"></p>
+                <div class="result-details" id="result-details"></div>
+                <button id="restart-btn" class="btn">إعادة الاختبار</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // بيانات الأسئلة من المستند
+        const questions = [
+            {
+                question: "العنصر هو مادة:",
+                options: [
+                    "أ. تتكون من نوع واحد من الذرات",
+                    "ب. تتكون من أكثر من نوع من الذرات",
+                    "ج. لا تحتوي على أي ذرات"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن العنصر لا يمكن تجزئته كيميائيًا، ويتكوّن من نوع واحد فقط من الذرات مثل الأوكسجين أو الحديد"
+            },
+            {
+                question: "المركب هو مادة:",
+                options: [
+                    "أ. لا يمكن تحليلها",
+                    "ب. تتكون من اتحاد عنصرين أو أكثر",
+                    "ج. تتكون من نوع واحد من الذرات"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن المركب ينتج من اتحاد عنصرين أو أكثر بنسبة ثابتة، مثل الماء (H₂O)"
+            },
+            {
+                question: "المحلول هو:",
+                options: [
+                    "أ. خليط متجانس من مادتين أو أكثر",
+                    "ب. مادة نقية",
+                    "ج. عنصر كيميائي"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن المحلول يتكوّن من مذيب ومذاب يمتزجان بشكل متجانس لا يمكن تمييز مكوناتهما"
+            },
+            {
+                question: "النسبة المئوية للكتلة تُحسب من العلاقة:",
+                options: [
+                    "أ. كتلة المذاب ÷ كتلة المحلول × 100",
+                    "ب. كتلة المذيب ÷ كتلة المذاب × 100",
+                    "ج. كتلة المحلول ÷ كتلة المذاب × 100"
+                ],
+                correctAnswer: 0,
+                explanation: "لأنها تعبر عن مقدار المذاب مقارنة بكتلة المحلول الكلية مضروبًا في 100 لإيجاد النسبة"
+            },
+            {
+                question: "وحدة قياس الكتلة في النظام الدولي هي:",
+                options: [
+                    "أ. المتر",
+                    "ب. الكيلوغرام",
+                    "ج. اللتر"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن الكيلوغرام هو الوحدة الأساسية المعتمدة عالميًا لقياس الكتلة"
+            },
+            {
+                question: "العنصر الذي يرمز له بالرمز (O) هو:",
+                options: [
+                    "أ. الأوكسجين",
+                    "ب. الهيدروجين",
+                    "ج. النيتروجين"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن الرمز (O) يُستخدم عالميًا للدلالة على عنصر الأوكسجين في الجدول الدوري"
+            },
+            {
+                question: "الماء يتكون من:",
+                options: [
+                    "أ. عنصري الهيدروجين والأوكسجين",
+                    "ب. عنصري الكربون والحديد",
+                    "ج. عنصر واحد فقط"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن الماء مركب كيميائي ناتج من اتحاد ذرتين من الهيدروجين مع ذرة واحدة من الأوكسجين"
+            },
+            {
+                question: "المخلوط الذي لا يمكن تمييز مكوناته بالعين يسمى:",
+                options: [
+                    "أ. مخلوط غير متجانس",
+                    "ب. مخلوط متجانس",
+                    "ج. عنصر"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن مكوناته تمتزج بانتظام مثل محلول السكر في الماء فلا يمكن تمييزها"
+            },
+            {
+                question: "جميع العناصر تتكون من:",
+                options: [
+                    "أ. ذرات",
+                    "ب. مركبات",
+                    "ج. محاليل"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن الذرة هي أصغر وحدة للمادة تحتفظ بخواص العنصر"
+            },
+            {
+                question: "العنصر الذي لا يمكن تقسيمه بطرق كيميائية هو:",
+                options: [
+                    "أ. المركب",
+                    "ب. العنصر",
+                    "ج. المحلول"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن العنصر مادة نقية لا يمكن تحليلها إلى مواد أبسط بالتفاعلات الكيميائية"
+            },
+            {
+                question: "يختلف المركب عن المخلوط في أن المركب:",
+                options: [
+                    "أ. يمكن فصله بطرق فيزيائية",
+                    "ب. له تركيب ثابت",
+                    "ج. يحتفظ كل مكون بصفاته"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن المركب يتكوّن من اتحاد عناصر بنسبة محددة وثابتة لا تتغير"
+            },
+            {
+                question: "عند إذابة السكر في الماء ينتج:",
+                options: [
+                    "أ. محلول متجانس",
+                    "ب. محلول غير متجانس",
+                    "ج. مركب جديد"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن مكونات المحلول تمتزج تمامًا ولا يمكن تمييزها بالعين"
+            },
+            {
+                question: "يطلق على المادة التي تذوب في مادة أخرى اسم:",
+                options: [
+                    "أ. المذيب",
+                    "ب. المذاب",
+                    "ج. المحلول"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن المذاب هو الجزء الذي يختفي داخل المذيب مكوّنًا المحلول"
+            },
+            {
+                question: "عند زيادة كمية المذاب في المحلول فإن تركيزه:",
+                options: [
+                    "أ. يقل",
+                    "ب. يزداد",
+                    "ج. لا يتغير"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن زيادة المذاب تعني زيادة النسبة بين المذاب والمذيب"
+            },
+            {
+                question: "السبب في ذوبان الملح في الماء هو:",
+                options: [
+                    "أ. تشابه في القطبية بينهما",
+                    "ب. اختلاف في الشحنة الكهربائية",
+                    "ج. وجود روابط فلزية"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن الماء والملح كلاهما مواد قطبية فتحدث تجاذبات كهربائية بينهما"
+            },
+            {
+                question: "يتشابه العنصر والمركب في أنهما:",
+                options: [
+                    "أ. مواد نقية",
+                    "ب. يمكن فصلهما بطرق فيزيائية",
+                    "ج. يتغيران بسهولة"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن كلًا منهما يتكوّن من مادة واحدة بتركيب محدد"
+            },
+            {
+                question: "يمكن وصف المحلول بأنه:",
+                options: [
+                    "أ. خليط غير متجانس",
+                    "ب. خليط متجانس",
+                    "ج. مركب كيميائي"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن مكوناته تمتزج بشكل موحد ولا يمكن تمييزها"
+            },
+            {
+                question: "ذوبان الشاي في الماء يُعد مثالًا على:",
+                options: [
+                    "أ. تفاعل كيميائي",
+                    "ب. محلول متجانس",
+                    "ج. محلول غير متجانس"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن عملية الذوبان لا تغير في التركيب الكيميائي للشاي"
+            },
+            {
+                question: "عند تبخر الماء من محلول الملح يبقى:",
+                options: [
+                    "أ. الملح فقط",
+                    "ب. الماء فقط",
+                    "ج. مركب جديد"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن التبخر يزيل المذيب (الماء) ويبقى المذاب (الملح)"
+            },
+            {
+                question: "المادة التي لا يمكن تجزئتها إلى مواد أبسط تُسمى:",
+                options: [
+                    "أ. مركب",
+                    "ب. عنصر",
+                    "ج. محلول"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن العنصر هو أبسط صورة للمادة ولا يمكن تحليله كيميائيًا"
+            },
+            {
+                question: "إذا كانت كتلة المذاب 20 جم وكتلة المحلول 200 جم، فإن النسبة المئوية للكتلة تساوي:",
+                options: [
+                    "أ. 10%",
+                    "ب. 20%",
+                    "ج. 5%"
+                ],
+                correctAnswer: 0,
+                explanation: "النسبة = (20 ÷ 200) × 100 = 10%"
+            },
+            {
+                question: "لتحديد ما إذا كانت المادة عنصرًا أم مركبًا يمكن استخدام:",
+                options: [
+                    "أ. اختبار الذوبان",
+                    "ب. التحليل الكيميائي",
+                    "ج. التسخين فقط"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن التحليل الكيميائي يوضح ما إذا كانت المادة تتجزأ إلى عناصر"
+            },
+            {
+                question: "عندما تتحد ذرتان من الهيدروجين مع ذرة من الأوكسجين يتكون:",
+                options: [
+                    "أ. غاز الأوكسجين",
+                    "ب. الماء",
+                    "ج. بخار الهيدروجين"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن اتحاد H₂ و O ينتج مركب الماء H₂O"
+            },
+            {
+                question: "إذا أذبت 5 جم من السكر في 95 جم من الماء فإن كتلة المحلول تساوي:",
+                options: [
+                    "أ. 100 جم",
+                    "ب. 90 جم",
+                    "ج. 105 جم"
+                ],
+                correctAnswer: 0,
+                explanation: "كتلة المحلول = المذاب + المذيب = 5 + 95 = 100 جم"
+            },
+            {
+                question: "يمكن فصل الرمل عن الماء بواسطة:",
+                options: [
+                    "أ. الترشيح",
+                    "ب. التقطير",
+                    "ج. التبخر"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن الرمل لا يذوب في الماء ويمكن إزالته باستخدام ورق ترشيح"
+            },
+            {
+                question: "لحساب النسبة المئوية للمركب نحتاج إلى:",
+                options: [
+                    "أ. كتلة العنصر وكتلة المركب",
+                    "ب. حجم العنصر فقط",
+                    "ج. كتلة المذيب فقط"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن النسبة تعتمد على مقارنة كتلة العنصر بكتلة المركب الكلية"
+            },
+            {
+                question: "عند تسخين مركب الماء ينتج:",
+                options: [
+                    "أ. الهيدروجين والأوكسجين",
+                    "ب. الكربون والنيتروجين",
+                    "ج. بخار الماء"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن التسخين يكسر الروابط بين عناصر المركب"
+            },
+            {
+                question: "لفصل الملح عن الماء يُستخدم:",
+                options: [
+                    "أ. التبخر",
+                    "ب. التقطير",
+                    "ج. الترشيح"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن التبخر يزيل الماء ويترك الملح المتبقي"
+            },
+            {
+                question: "يستخدم قانون النسبة المئوية للكتلة لحساب:",
+                options: [
+                    "أ. نسبة العنصر في المركب",
+                    "ب. حجم المادة",
+                    "ج. درجة الغليان"
+                ],
+                correctAnswer: 0,
+                explanation: "لأنه يحدد مقدار العنصر داخل المركب من خلال الكتلة"
+            },
+            {
+                question: "عند إذابة كمية كبيرة من السكر في كمية قليلة من الماء نحصل على محلول:",
+                options: [
+                    "أ. مركز",
+                    "ب. مخفف",
+                    "ج. مشبع"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن تركيز المذاب مرتفع مقارنة بالمذيب"
+            },
+            {
+                question: "قارن بين العنصر والمركب من حيث عدد الذرات.",
+                options: [
+                    "أ. العنصر نوع واحد، المركب نوعان أو أكثر",
+                    "ب. كلاهما نوع واحد",
+                    "ج. كلاهما نوعان مختلفان"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن العنصر يتكوّن من ذرة واحدة بينما المركب من اتحاد عناصر متعددة"
+            },
+            {
+                question: "عند تحليل الماء كهربائيًا نحصل على:",
+                options: [
+                    "أ. ذرات هيدروجين فقط",
+                    "ب. غازي الهيدروجين والأوكسجين",
+                    "ج. محلول جديد"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن التحليل الكهربائي يفصل العناصر المكوّنة للماء"
+            },
+            {
+                question: "السبب في ثبات تركيب المركب هو:",
+                options: [
+                    "أ. لأنه خليط متجانس",
+                    "ب. لأن عناصره مرتبطة بنسب ثابتة",
+                    "ج. لأن له لونًا ثابتًا"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن المركب يتكوّن وفق قانون النسب الثابتة"
+            },
+            {
+                question: "عند مقارنة السكر والملح نجد أنهما:",
+                options: [
+                    "أ. عنصران نقيان",
+                    "ب. مركبان كيميائيان",
+                    "ج. محاليل متجانسة"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن كلاً منهما يتكوّن من أكثر من عنصر باتحاد كيميائي"
+            },
+            {
+                question: "يمكن التمييز بين المركب والمحلول من خلال:",
+                options: [
+                    "أ. ثبات النسبة بين المكونات",
+                    "ب. اللون فقط",
+                    "ج. الشكل البلوري"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن المركب له نسبة تركيب ثابتة بينما المحلول تختلف نسب مكوناته"
+            },
+            {
+                question: "تحليل ثاني أكسيد الكربون ينتج:",
+                options: [
+                    "أ. كربون وأوكسجين",
+                    "ب. هيدروجين وأوكسجين",
+                    "ج. كربون وهيدروجين"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن CO₂ يحتوي على عنصري الكربون والأوكسجين فقط"
+            },
+            {
+                question: "عند مزج الرمل والحديد يمكن فصلهما باستخدام:",
+                options: [
+                    "أ. مغناطيس",
+                    "ب. التقطير",
+                    "ج. الترشيح"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن الحديد ينجذب للمغناطيس بينما الرمل لا ينجذب"
+            },
+            {
+                question: "السبب في أن العناصر والمركبات مواد نقية هو:",
+                options: [
+                    "أ. لثبات تركيبها",
+                    "ب. لأنها خليط من مواد مختلفة",
+                    "ج. لأنها تتغير بالحرارة"
+                ],
+                correctAnswer: 0,
+                explanation: "لأنها تمتلك تركيبًا محددًا لا يتغير من عينة لأخرى"
+            },
+            {
+                question: "اختر طريقة مناسبة لفصل الزيت عن الماء:",
+                options: [
+                    "أ. الترشيح",
+                    "ب. قمع الفصل",
+                    "ج. التقطير"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن الزيت والماء لا يمتزجان ويختلفان في الكثافة"
+            },
+            {
+                question: "يستنتج من قانون النسب الثابتة أن:",
+                options: [
+                    "أ. كل مركب له تركيب متغير",
+                    "ب. النسبة بين العناصر في المركب ثابتة دائمًا",
+                    "ج. العناصر تتغير في كل مرة"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن المركبات تتكوّن من نفس العناصر بنفس النسب دائمًا"
+            },
+            {
+                question: "لتقليل تركيز محلول ملحي يمكن:",
+                options: [
+                    "أ. إضافة مزيد من المذيب",
+                    "ب. تبخير الماء",
+                    "ج. زيادة المذاب"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن زيادة المذيب تخفف تركيز المحلول"
+            },
+            {
+                question: "أهمية دراسة العناصر والمركبات هي:",
+                options: [
+                    "أ. لفهم التفاعلات الكيميائية",
+                    "ب. لتغيير الألوان فقط",
+                    "ج. لتزيين المعامل"
+                ],
+                correctAnswer: 0,
+                explanation: "لأنها أساس فهم تركيب المواد وسلوكها في الطبيعة"
+            },
+            {
+                question: "قيّم العبارة: \"الماء عنصر كيميائي\"",
+                options: [
+                    "أ. صحيحة",
+                    "ب. خاطئة",
+                    "ج. صحيحة جزئيًا"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن الماء مركب يتكوّن من عنصرين مختلفين هما الهيدروجين والأوكسجين"
+            },
+            {
+                question: "تدل تجربة ذوبان السكر في الماء على أن:",
+                options: [
+                    "أ. السكر تغير كيميائيًا",
+                    "ب. السكر ذاب فيزيائيًا دون تغيير",
+                    "ج. تكوّن مركب جديد"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن الذوبان عملية فيزيائية لا تنتج مادة جديدة"
+            },
+            {
+                question: "لتكوين مركب جديد يجب أن:",
+                options: [
+                    "أ. تتفاعل عناصر بنسب ثابتة",
+                    "ب. تخلط عناصر دون تفاعل",
+                    "ج. تسخن فقط"
+                ],
+                correctAnswer: 0,
+                explanation: "لأن التفاعل الكيميائي ينتج مركبًا بنسبة ثابتة من العناصر"
+            },
+            {
+                question: "عند زيادة المذاب حتى لا يذوب أكثر يصبح المحلول:",
+                options: [
+                    "أ. مركز",
+                    "ب. مشبع",
+                    "ج. مخفف"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن المحلول المشبع لا يمكنه إذابة المزيد من المذاب"
+            },
+            {
+                question: "أهمية قانون النسبة المئوية أنه:",
+                options: [
+                    "أ. يحدد كتلة العنصر في المركب",
+                    "ب. يحدد اللون",
+                    "ج. يقيس درجة الحرارة"
+                ],
+                correctAnswer: 0,
+                explanation: "لأنه يستخدم لمعرفة النسب الدقيقة للعناصر في المركبات"
+            },
+            {
+                question: "عند تبريد المحلول المشبع ينتج:",
+                options: [
+                    "أ. زيادة الذوبان",
+                    "ب. ترسب المذاب الزائد",
+                    "ج. اختفاء المذاب"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن انخفاض درجة الحرارة يقلل من الذوبان فيترسب المذاب"
+            },
+            {
+                question: "السبب في اعتبار الماء مذيبًا عامًّا هو:",
+                options: [
+                    "أ. لأنه عديم اللون",
+                    "ب. لأنه يذيب مواد كثيرة",
+                    "ج. لأنه مركب نقي"
+                ],
+                correctAnswer: 1,
+                explanation: "لأن قطبية جزيئاته تجعله قادرًا على إذابة معظم المواد"
+            },
+            {
+                question: "تُعد النسبة المئوية للكتلة مفيدة لأنها:",
+                options: [
+                    "أ. تساعد على تحديد تركيب المركبات بدقة",
+                    "ب. تستخدم فقط في الفيزياء",
+                    "ج. لا علاقة لها بالكيمياء"
+                ],
+                correctAnswer: 0,
+                explanation: "لأنها أداة دقيقة لمعرفة كمية كل عنصر في المركبات المختلفة"
+            }
+        ];
+
+        // متغيرات التطبيق
+        let currentQuestion = 0;
+        let userAnswers = new Array(questions.length);
+        let score = 0;
+        let timer;
+        let timeLeft = 30 * 60; // 30 دقيقة بالثواني
+        let quizStarted = false;
+        let audioContext;
+
+        // عناصر DOM
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const studentNameInput = document.getElementById('student-name');
+        const studentClassInput = document.getElementById('student-class');
+        const startBtn = document.getElementById('start-btn');
+        const timerDisplay = document.getElementById('timer');
+        const questionNumber = document.getElementById('question-number');
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const feedbackElement = document.getElementById('feedback');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const studentInfo = document.getElementById('student-info');
+        const scoreElement = document.getElementById('score');
+        const timeTakenElement = document.getElementById('time-taken');
+        const resultDetailsElement = document.getElementById('result-details');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // تهيئة الصوت
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Web Audio API غير مدعوم في هذا المتصفح');
+            }
+        }
+
+        // تشغيل صوت النجاح
+        function playSuccessSound() {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        // بدء المؤقت
+        function startTimer() {
+            timer = setInterval(function() {
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        // عرض السؤال الحالي
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            
+            questionNumber.textContent = `السؤال ${currentQuestion + 1} من ${questions.length}`;
+            questionElement.textContent = question.question;
+            
+            optionsElement.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.dataset.index = index;
+                
+                // إذا كان المستخدم قد أجاب على هذا السؤال
+                if (userAnswers[currentQuestion] !== undefined) {
+                    if (index === question.correctAnswer) {
+                        optionElement.classList.add('correct');
+                    } else if (index === userAnswers[currentQuestion] && userAnswers[currentQuestion] !== question.correctAnswer) {
+                        optionElement.classList.add('incorrect');
+                    }
+                    
+                    if (index === userAnswers[currentQuestion]) {
+                        optionElement.classList.add('selected');
+                    }
+                }
+                
+                optionElement.addEventListener('click', selectOption);
+                optionsElement.appendChild(optionElement);
+            });
+            
+            // تحديث أزرار التنقل
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.disabled = userAnswers[currentQuestion] === undefined;
+            
+            // تحديث شريط التقدم
+            updateProgress();
+            
+            // عرض التغذية الراجعة إذا كان المستخدم قد أجاب على السؤال
+            if (userAnswers[currentQuestion] !== undefined) {
+                showFeedback();
+            } else {
+                feedbackElement.style.display = 'none';
+            }
+        }
+
+        // اختيار إجابة
+        function selectOption(e) {
+            if (userAnswers[currentQuestion] !== undefined) return;
+            
+            const selectedOption = e.target;
+            const selectedIndex = parseInt(selectedOption.dataset.index);
+            
+            userAnswers[currentQuestion] = selectedIndex;
+            
+            // تحديث واجهة المستخدم
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.classList.remove('selected');
+            });
+            selectedOption.classList.add('selected');
+            
+            // التحقق من الإجابة الصحيحة
+            const question = questions[currentQuestion];
+            if (selectedIndex === question.correctAnswer) {
+                score++;
+                playSuccessSound();
+                feedbackElement.textContent = `إجابة صحيحة! ${question.explanation}`;
+                feedbackElement.className = 'feedback correct';
+            } else {
+                feedbackElement.textContent = `إجابة خاطئة! الإجابة الصحيحة هي: ${question.options[question.correctAnswer]}. ${question.explanation}`;
+                feedbackElement.className = 'feedback incorrect';
+            }
+            
+            feedbackElement.style.display = 'block';
+            
+            // تمكين زر التالي
+            nextBtn.disabled = false;
+            
+            // تحديث شريط التقدم
+            updateProgress();
+        }
+
+        // عرض التغذية الراجعة
+        function showFeedback() {
+            const question = questions[currentQuestion];
+            const userAnswer = userAnswers[currentQuestion];
+            
+            if (userAnswer === question.correctAnswer) {
+                feedbackElement.textContent = `إجابة صحيحة! ${question.explanation}`;
+                feedbackElement.className = 'feedback correct';
+            } else {
+                feedbackElement.textContent = `إجابة خاطئة! الإجابة الصحيحة هي: ${question.options[question.correctAnswer]}. ${question.explanation}`;
+                feedbackElement.className
